@@ -70,6 +70,7 @@ function ContactPageContent() {
     formState: { errors, isSubmitting },
     reset,
     setValue,
+    getValues, // Added getValues here
   } = useForm<ContactFormValues>({
     resolver: zodResolver(ContactFormSchema),
     defaultValues: {
@@ -85,7 +86,7 @@ function ContactPageContent() {
     } else {
       // Ensure message is reset if carNameParam is removed or not present
       const currentMessage = getValues('message');
-      if (currentMessage.startsWith(t('contactFormMessageCarInterest', { carName: '' }).substring(0, 20))) { // Check if it's a car interest message
+      if (currentMessage && currentMessage.startsWith(t('contactFormMessageCarInterest', { carName: '' }).substring(0, 20))) { // Check if it's a car interest message
         setValue('message', '');
       }
     }
@@ -122,7 +123,8 @@ function ContactPageContent() {
       }
     } catch (error: any) {
         let detailedErrorMessage = error.message || t('contactFormErrorServerDefault');
-        if (error.message && error.message.includes("Raw response was:")) {
+        // Updated check for unreadable server response
+        if (error.message && (error.message.includes("Unexpected token") || error.message.includes("JSON.parse")) && error.message.toLowerCase().includes("html")) {
             detailedErrorMessage = t('contactFormErrorServerUnreadable');
         }
       toast({
