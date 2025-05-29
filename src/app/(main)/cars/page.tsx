@@ -8,10 +8,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button';
 import { Search, ListFilter, Loader2 } from 'lucide-react';
 import { useLanguage } from '@/contexts/i18n-context';
-import React, { useState, useEffect, Suspense } from 'react'; // Added Suspense
+import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 
-// Define a loading component for Suspense fallback
 function CarsPageLoadingFallback() {
   const { t } = useLanguage();
   return (
@@ -32,11 +31,11 @@ function CarsPageClientContent() {
   const [uniqueBrands, setUniqueBrands] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Initialize query and brand from searchParamsHook inside useEffect or ensure they are stable
   const [query, setQuery] = useState('');
   const [brand, setBrand] = useState('all');
 
   useEffect(() => {
+    // Initialize state from URL search params on mount or when searchParamsHook changes
     setQuery(searchParamsHook.get('q') || '');
     setBrand(searchParamsHook.get('brand') || 'all');
   }, [searchParamsHook]);
@@ -61,23 +60,23 @@ function CarsPageClientContent() {
   }, []);
 
   useEffect(() => {
+    // This effect handles the actual filtering whenever allCars or the filter criteria (query, brand) change.
+    // It now directly uses the state variables `query` and `brand` which are kept in sync with URL params.
     let carsToFilter = allCars;
-    const currentQuery = (searchParamsHook.get('q') || query).toLowerCase();
-    const currentBrand = searchParamsHook.get('brand') || brand;
+    const currentQueryLower = query.toLowerCase();
 
-
-    if (currentQuery) {
+    if (currentQueryLower) {
       carsToFilter = carsToFilter.filter(car =>
-        car.name.toLowerCase().includes(currentQuery) ||
-        car.brand.toLowerCase().includes(currentQuery)
+        car.name.toLowerCase().includes(currentQueryLower) ||
+        car.brand.toLowerCase().includes(currentQueryLower)
       );
     }
 
-    if (currentBrand && currentBrand !== 'all') {
-      carsToFilter = carsToFilter.filter(car => car.brand === currentBrand);
+    if (brand && brand !== 'all') {
+      carsToFilter = carsToFilter.filter(car => car.brand === brand);
     }
     setFilteredCars(carsToFilter);
-  }, [searchParamsHook, allCars, query, brand]); // Added query and brand to dependencies
+  }, [allCars, query, brand]); // query and brand are now direct dependencies from component state
 
   const handleFilterSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -93,7 +92,7 @@ function CarsPageClientContent() {
     router.push('/cars');
   };
 
-  if (loading) { // This is the data loading state, Suspense handles the initial render
+  if (loading) {
     return <CarsPageLoadingFallback />;
   }
 
@@ -163,7 +162,6 @@ function CarsPageClientContent() {
   );
 }
 
-// New default export for the page, wrapping the client content in Suspense
 export default function AllCarsPage() {
   return (
     <Suspense fallback={<CarsPageLoadingFallback />}>

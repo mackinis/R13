@@ -20,22 +20,14 @@ export default function CarDetailPage({ params }: { params: { id: string } }) {
   const { t, language } = useLanguage();
   const [car, setCar] = useState<Car | undefined | null>(undefined); // null for not found, undefined for loading
   const [loading, setLoading] = useState(true);
-  const [storeSettings, setStoreSettings] = useState<{ contactInfo?: { phone?: string } } | null>(null); // For phone number
 
   useEffect(() => {
     async function loadCarAndSettings() {
       if (params.id) {
         setLoading(true);
         try {
-          // In a real app, you might fetch store settings separately or ensure they are globally available
-          // For now, we'll simulate fetching a part of it or assume it's passed if needed elsewhere
-          // This is primarily for the "Call Us" button's phone number
           const fetchedCar: Car | undefined = await getCarById(params.id);
           setCar(fetchedCar || null);
-          // Simulate fetching contact phone if not available via a global context/prop
-          // This is a simplified example; ideally, contact info comes from a reliable source
-          // For this specific page, we might not need full storeSettings, just the contact phone
-          // For now, we will use the translated phone number directly from `t('siteContactPhone')`
         } catch (error) {
           console.error(`Error fetching car ${params.id}:`, error);
           setCar(null);
