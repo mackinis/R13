@@ -2,11 +2,12 @@
 "use client"; 
 
 import Link from 'next/link';
+import React, { useState } from 'react'; // Import useState
 import { ThemeToggle } from '@/components/theme-toggle';
 import { AutoArtisanLogo } from '@/components/autoartisan-logo';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, LogIn } from 'lucide-react'; 
+import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@/components/ui/sheet'; // Added SheetClose for potential direct close
+import { Menu } from 'lucide-react'; 
 import { LanguageSwitcher } from '@/components/language-switcher';
 import { useLanguage } from '@/contexts/i18n-context';
 import type { StoreSettings } from '@/lib/data';
@@ -17,12 +18,17 @@ interface HeaderProps {
 
 export function Header({ storeSettings }: HeaderProps) {
   const { t } = useLanguage();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // State for mobile menu
 
   const navItems = [
     { href: '/', label: t('navHome') },
     { href: '/cars', label: t('navAllCars') },
     { href: '/contact', label: t('navContact') },
   ];
+
+  const handleLinkClick = () => {
+    setIsMobileMenuOpen(false); // Close menu on link click
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -46,15 +52,14 @@ export function Header({ storeSettings }: HeaderProps) {
         
         {/* Mobile Menu */}
         <div className="md:hidden flex items-center">
-           <Sheet>
+           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" aria-label={t('toggleMenuSrOnly')}>
                 <Menu className="h-6 w-6" />
-                <span className="sr-only">{t('toggleMenuSrOnly')}</span>
               </Button>
             </SheetTrigger>
             <SheetContent side="left">
-              <Link href="/" className="mb-6 flex items-center">
+              <Link href="/" className="mb-6 flex items-center" onClick={handleLinkClick}>
                  <AutoArtisanLogo storeSettings={storeSettings ?? undefined} />
               </Link>
               <nav className="flex flex-col gap-4">
@@ -63,11 +68,11 @@ export function Header({ storeSettings }: HeaderProps) {
                     key={item.href}
                     href={item.href}
                     className="text-lg font-medium text-foreground transition-colors hover:text-primary"
+                    onClick={handleLinkClick} // Add onClick handler here
                   >
                     {item.label}
                   </Link>
                 ))}
-                {/* Login icon for mobile menu is also removed to enforce access via /panel attempt */}
               </nav>
             </SheetContent>
           </Sheet>
@@ -80,7 +85,6 @@ export function Header({ storeSettings }: HeaderProps) {
         </div>
 
         <div className="flex flex-1 items-center justify-end space-x-2">
-          {/* Login icon button removed from desktop header as well */}
           <LanguageSwitcher />
           <ThemeToggle />
         </div>
