@@ -1,0 +1,24 @@
+{
+  "name": "AutoArtisan",
+  "short_name": "AutoArtisan",
+  "description": "Crafting Automotive Excellence - Your premier destination for luxury and performance vehicles.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F0F2FF",
+  "theme_color": "#3F51B5",
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "orientation": "portrait-primary"
+}
